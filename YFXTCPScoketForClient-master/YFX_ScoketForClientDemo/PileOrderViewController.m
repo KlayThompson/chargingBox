@@ -28,6 +28,12 @@
     self.durationTF.text = self.orderModel.duration;
     self.stopTimeTF.text = self.orderModel.stopTime;
     self.stopReasonTF.text = self.orderModel.stopReason;
+    
+    if (self.isSending) {
+        [self.chargingButton setTitle:@"停止上报数据" forState:UIControlStateNormal];
+    } else {
+        [self.chargingButton setTitle:@"上报充电数据" forState:UIControlStateNormal];
+    }
 }
 
 - (IBAction)uploadChargingData:(id)sender {
@@ -41,7 +47,11 @@
     model.currentA = self.currentATF.text;
     model.startTime = self.startTimeTF.text;
     model.duration = self.durationTF.text;
-    self.chargingBlock(model);
+    if (self.isSending) {
+        self.stopBlock();
+    } else {
+        self.chargingBlock(model);
+    }
 }
 
 - (IBAction)uploadChargeOrder:(id)sender {
@@ -54,7 +64,9 @@
     model.duration = self.durationTF.text;
     model.stopReason = self.stopReasonTF.text;
     model.chargeKwh = self.chargeKwhTF.text;
-    self.chargeOrderBlock(model);
+    if (self.chargeOrderBlock) {
+        self.chargeOrderBlock(model);
+    }
 }
 
 @end

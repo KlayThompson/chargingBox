@@ -23,11 +23,15 @@
 @property (nonatomic, strong) PileHeartbeatModel *heartbeatModel;
 @property (nonatomic, strong) PileLoginModel *loginModel;
 @property (weak, nonatomic) IBOutlet UIButton *heartbeatButton;
+@property (nonatomic, strong) PileOrderModel *chargingModel;
+@property (nonatomic, strong) PileOrderModel *orderModel;
 
 @property (nonatomic, assign) BOOL isHeartbeating;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, assign) int duration;
 
+@property (nonatomic, assign) BOOL isSendChargingData;
+@property (nonatomic, strong) NSTimer *chargingTimer;
 @end
 
 @implementation ChargingPileViewController
@@ -42,12 +46,16 @@
     self.logStr = [[NSMutableString alloc] initWithString:@""];
     self.isHeartbeating = false;
     
+    self.chargingModel = [PileOrderModel new];
+    self.orderModel = [PileOrderModel new];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     [self.timer  setFireDate:[NSDate distantFuture]];
+    [self.chargingTimer setFireDate:[NSDate distantFuture]];
     [self.clientSocket disconnect];
 }
 
@@ -73,14 +81,9 @@
     } else if ([str hasPrefix:@"aa11"]) {// 上报心跳
         [self showLogWithStr:[NSString stringWithFormat:@"充电桩上报心跳状态成功，服务端发过来的消息 = \n%@",data]];
     } else if ([str hasPrefix:@"aa19"]) {// 刷卡信息上报
-//        0x00：验证通过
-//        0x01：未注册IC卡
-//        0x02：套餐过期
-//        0x03：账户欠费
-//        0x04：有待支付订单
-//        0x05：没有使用权限
-//        0x06：其他原因
         [self analyseSwipeCardDataWithStr:str];
+    } else if ([str hasPrefix:@"aa1c"]) {// 上报充电订单
+        [self analyseChargeOrderWithString:str];
     }
     else {
         [self showLogWithStr:[NSString stringWithFormat:@"读取服务端发过来的消息 = %@",data]];
@@ -129,6 +132,25 @@
     }];
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = @"请输入卡号";
+    }];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+
+    [self presentViewController:alert animated:YES completion:nil];
+}
+- (IBAction)uploadErrorButtonClick:(id)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Title" message:nil preferredStyle:UIAlertControllerStyleAlert];
+
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+        UITextField *code = alert.textFields.firstObject;
+
+        [self uploadSwitchErrorWithErrorCode:code.text];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"请输入故障信息代码";
     }];
     [self presentViewController:alert animated:YES completion:nil];
 }
@@ -259,10 +281,103 @@
     
     [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
 }
+//上报充电中数据
+- (void)uploadChargingData {
+    unsigned char send[8] = {0x68, 0x1b, 0x00, 0x00, 25, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+
+    unsigned char switchNum[1] = {self.chargingModel.switchNum.intValue};
+    [bodyData appendData:[NSData dataWithBytes:switchNum length:1]];
+    
+    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.userId.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+    
+    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.serialNum.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    
+    double chargeKwh = self.chargingModel.chargeKwh.doubleValue * 100;
+    NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
+    [bodyData appendData:[Tools convertHexStrToData:chargeKwhStr length:2]];
+    
+    double chargeW = self.chargingModel.chargeW.doubleValue * 100;
+    NSString *chargeWStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeW]];
+    [bodyData appendData:[Tools convertHexStrToData:chargeWStr length:2]];
+    
+    double currentV = self.chargingModel.currentV.doubleValue * 100;
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)currentV]] length:2]];
+    
+    double currentA = self.chargingModel.currentV.doubleValue * 100;
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)currentA]] length:2]];
+    
+    NSString *startTime = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.startTime.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:startTime length:4]];
+    
+    NSString *duration = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.duration.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:duration length:4]];
+    
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+}
 
 //上报充电订单
 - (void)uploadChargeOrder:(PileOrderModel *)model {
+    unsigned char send[8] = {0x68, 0x1c, 0x00, 0x00, 24, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
     
+    NSMutableData *bodyData = [NSMutableData new];
+
+    unsigned char switchNum[1] = {model.switchNum.intValue};
+    [bodyData appendData:[NSData dataWithBytes:switchNum length:1]];
+    
+    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:model.userId.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+    
+    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:model.serialNum.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    
+    double chargeKwh = model.chargeKwh.doubleValue * 100;
+    NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
+    [bodyData appendData:[Tools convertHexStrToData:chargeKwhStr length:2]];
+    
+    NSString *startTime = [Tools reverseWithString:[Tools getHexByDecimal:model.startTime.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:startTime length:4]];
+    
+    NSString *stopTime = [Tools reverseWithString:[Tools getHexByDecimal:model.stopTime.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:stopTime length:4]];
+    
+    NSString *duration = [Tools reverseWithString:[Tools getHexByDecimal:model.duration.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:duration length:4]];
+    
+    [bodyData appendData:[Tools convertHexStrToData:[Tools remove0xStringWithString:model.stopReason] length:1]];
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+}
+
+- (void)uploadSwitchErrorWithErrorCode:(NSString *)errorCode {
+    unsigned char send[8] = {0x68, 0x14, 0x00, 0x00, 10, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+
+    unsigned char some[2] = {0x02,0x01};
+    [bodyData appendData:[NSData dataWithBytes:some length:2]];
+    
+    NSString *error = [Tools hexStringFromString:errorCode];
+    [bodyData appendData:[Tools hexToBytes:error length:4]];
+    
+    NSString *startTime = [Tools reverseWithString:[Tools getHexByDecimal:[Tools currentdateInterval].intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:startTime length:4]];
+    
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
 }
 
 #pragma mark - 解析返回数据
@@ -311,6 +426,14 @@
     [self showLogWithStr:[NSString stringWithFormat:@"刷卡返回结果为：%@", status]];
 }
 
+//上报充电订单解析
+- (void)analyseChargeOrderWithString:(NSString *)str {
+    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 8, 8)]]];
+    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 16, 8)]]];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 18, 2)]];
+    [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，用户ID：%@，流水号：%@", switchNum, userId, serialNum]];
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -340,12 +463,26 @@
         };
     } else if ([segue.identifier isEqualToString:@"charging_status"]) {
         PileOrderViewController *order = (PileOrderViewController *)segue.destinationViewController;
+        __weak typeof (self) weakSelf = self;
+        order.orderModel = self.orderModel;
+        order.isSending = self.isSendChargingData;
         order.chargeOrderBlock = ^(PileOrderModel * _Nonnull model) {
+            weakSelf.orderModel = model;
             //上报充电订单
-            [self uploadChargeOrder:model];
+            [weakSelf uploadChargeOrder:model];
         };
-        order.chargeOrderBlock = ^(PileOrderModel * _Nonnull model) {
+        order.chargingBlock = ^(PileOrderModel * _Nonnull model) {
             //上报充电中数据，一分钟一次
+            weakSelf.chargingModel = model;
+            NSLog(@"");
+//            [weakSelf uploadChargingData];
+            [weakSelf.chargingTimer setFireDate:[NSDate distantPast]];
+            weakSelf.isSendChargingData = YES;
+        };
+        order.stopBlock = ^{
+            //停止上报充电中数据
+            [weakSelf.chargingTimer setFireDate:[NSDate distantFuture]];
+            weakSelf.isSendChargingData = NO;
         };
     }
 }
@@ -395,5 +532,12 @@
         _timer = [NSTimer scheduledTimerWithTimeInterval:self.duration target:self selector:@selector(heartbeat) userInfo:nil repeats:YES];
     }
     return _timer;
+}
+
+- (NSTimer *)chargingTimer {
+    if (_chargingTimer == nil) {
+        _chargingTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(uploadChargingData) userInfo:nil repeats:YES];
+    }
+    return _chargingTimer;
 }
 @end

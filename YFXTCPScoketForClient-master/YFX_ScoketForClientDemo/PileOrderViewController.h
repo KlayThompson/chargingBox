@@ -12,9 +12,11 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void(^ChargeOrderBlock)(PileOrderModel *model);
 typedef void(^ChargingBlock)(PileOrderModel *model);
+typedef void(^StopCountBlock)();
 
 
 @interface PileOrderViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UIButton *chargingButton;
 @property (weak, nonatomic) IBOutlet UITextField *switchNumTF;
 @property (weak, nonatomic) IBOutlet UITextField *userIdTF;
 
@@ -32,7 +34,8 @@ typedef void(^ChargingBlock)(PileOrderModel *model);
 
 @property (nonatomic, copy) ChargingBlock chargingBlock;
 @property (nonatomic, copy) ChargeOrderBlock chargeOrderBlock;
-
+@property (nonatomic, copy) StopCountBlock stopBlock;
+@property (nonatomic, assign) BOOL isSending;
 @end
 
 NS_ASSUME_NONNULL_END

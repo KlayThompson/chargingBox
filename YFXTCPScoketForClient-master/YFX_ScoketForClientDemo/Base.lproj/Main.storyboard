@@ -1826,6 +1826,9 @@
                                                 <state key="normal" title="+">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="uploadErrorButtonClick:" destination="4KC-r0-VrP" eventType="touchUpInside" id="BTg-7I-4Uq"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ULK-EP-6ZH">
                                                 <rect key="frame" x="309" y="25" width="80" height="40"/>
@@ -2713,6 +2716,7 @@
                     <connections>
                         <outlet property="chargeKwhTF" destination="byy-57-hVW" id="T5c-7i-Q1u"/>
                         <outlet property="chargeWTF" destination="kkm-zI-huc" id="SVk-le-ad3"/>
+                        <outlet property="chargingButton" destination="siG-aN-9uN" id="1dx-WY-XQx"/>
                         <outlet property="currentATF" destination="u1H-JD-W6q" id="t2p-1r-5ae"/>
                         <outlet property="currentVTF" destination="ZWJ-Nf-03g" id="47L-6B-HSo"/>
                         <outlet property="durationTF" destination="wHe-aL-QAj" id="cGj-JI-vWe"/>
