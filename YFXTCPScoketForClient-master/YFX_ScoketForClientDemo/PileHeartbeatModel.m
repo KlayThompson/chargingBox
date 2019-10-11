@@ -21,7 +21,7 @@
         _pileTem = @"38";
         _switchStatus = @"0x00";
         _switchKwh = @"5";
-        _sendTime = @"6";
+        _sendTime = @"60";
     }
     return self;
 }

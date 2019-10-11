@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		48412B7523437C9C00E69084 /* Tools.m in Sources */ = {isa = PBXBuildFile; fileRef = 48412B7423437C9C00E69084 /* Tools.m */; };
 		48412B7823459B1700E69084 /* BoxDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48412B7723459B1700E69084 /* BoxDetailViewController.m */; };
+		48D6354D235050BB00F18FCA /* PileOrderModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 48D6354C235050BB00F18FCA /* PileOrderModel.m */; };
+		48D6355023505B6C00F18FCA /* PileOrderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48D6354F23505B6C00F18FCA /* PileOrderViewController.m */; };
 		48DE9045233DB1F00032B496 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DE9044233DB1F00032B496 /* SettingViewController.m */; };
 		48ED32A32345E98D0094B844 /* BatteryModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 48ED32A22345E98D0094B844 /* BatteryModel.m */; };
 		48ED32A62346D4F50094B844 /* BoxModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 48ED32A52346D4F50094B844 /* BoxModel.m */; };
@@ -57,6 +59,10 @@
 		48412B7423437C9C00E69084 /* Tools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tools.m; sourceTree = "<group>"; };
 		48412B7623459B1700E69084 /* BoxDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoxDetailViewController.h; sourceTree = "<group>"; };
 		48412B7723459B1700E69084 /* BoxDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BoxDetailViewController.m; sourceTree = "<group>"; };
+		48D6354B235050BB00F18FCA /* PileOrderModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PileOrderModel.h; sourceTree = "<group>"; };
+		48D6354C235050BB00F18FCA /* PileOrderModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PileOrderModel.m; sourceTree = "<group>"; };
+		48D6354E23505B6C00F18FCA /* PileOrderViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PileOrderViewController.h; sourceTree = "<group>"; };
+		48D6354F23505B6C00F18FCA /* PileOrderViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PileOrderViewController.m; sourceTree = "<group>"; };
 		48DE9043233DB1F00032B496 /* SettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		48DE9044233DB1F00032B496 /* SettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		48ED32A12345E98D0094B844 /* BatteryModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BatteryModel.h; sourceTree = "<group>"; };
@@ -197,6 +203,8 @@
 				48ED32BF234B6AEB0094B844 /* PileLoginViewController.m */,
 				48ED32C1234B6B370094B844 /* PileHearbeatViewController.h */,
 				48ED32C2234B6B370094B844 /* PileHearbeatViewController.m */,
+				48D6354E23505B6C00F18FCA /* PileOrderViewController.h */,
+				48D6354F23505B6C00F18FCA /* PileOrderViewController.m */,
 				6A820BEE1E2369FB00DCC7EB /* GCDAsyncSocket.h */,
 				6A820BEF1E2369FB00DCC7EB /* GCDAsyncSocket.m */,
 				6A820BF01E2369FB00DCC7EB /* GCDAsyncUdpSocket.h */,
@@ -211,6 +219,8 @@
 				48ED32C5234B6EE40094B844 /* PileLoginModel.m */,
 				48ED32C7234B6EF50094B844 /* PileHeartbeatModel.h */,
 				48ED32C8234B6EF50094B844 /* PileHeartbeatModel.m */,
+				48D6354B235050BB00F18FCA /* PileOrderModel.h */,
+				48D6354C235050BB00F18FCA /* PileOrderModel.m */,
 				48ED32AD234B5ED40094B844 /* TPKeyboardAvoiding */,
 				48412B7223437C8700E69084 /* Tools */,
 				6A820BC41E2369A400DCC7EB /* Main.storyboard */,
@@ -389,10 +399,12 @@
 				48ED32C9234B6EF50094B844 /* PileHeartbeatModel.m in Sources */,
 				6A820BF21E2369FB00DCC7EB /* GCDAsyncSocket.m in Sources */,
 				48ED32C0234B6AEB0094B844 /* PileLoginViewController.m in Sources */,
+				48D6354D235050BB00F18FCA /* PileOrderModel.m in Sources */,
 				48ED32C6234B6EE40094B844 /* PileLoginModel.m in Sources */,
 				48ED32A9234A3AF30094B844 /* OrderSettingViewController.m in Sources */,
 				48ED32C3234B6B370094B844 /* PileHearbeatViewController.m in Sources */,
 				48ED32BA234B5ED40094B844 /* TPKeyboardAvoidingCollectionView.m in Sources */,
+				48D6355023505B6C00F18FCA /* PileOrderViewController.m in Sources */,
 				6A820BF31E2369FB00DCC7EB /* GCDAsyncUdpSocket.m in Sources */,
 				48ED32B7234B5ED40094B844 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				48412B7523437C9C00E69084 /* Tools.m in Sources */,

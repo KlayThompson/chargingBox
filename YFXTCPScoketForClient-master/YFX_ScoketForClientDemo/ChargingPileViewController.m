@@ -13,6 +13,7 @@
 #import "PileLoginModel.h"
 #import "GCDAsyncSocket.h"
 #import "Tools.h"
+#import "PileOrderViewController.h"
 
 @interface ChargingPileViewController ()<GCDAsyncSocketDelegate>
 
@@ -47,9 +48,10 @@
     [super viewWillDisappear:animated];
     
     [self.timer  setFireDate:[NSDate distantFuture]];
+    [self.clientSocket disconnect];
 }
 
-#pragma mark ------------
+#pragma mark - SOCKET Delegate
 //客户端链接服务器成功
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port{
     
@@ -68,9 +70,19 @@
     NSString *str = [Tools convertDataToHexStrWithData:data];
     if ([str hasPrefix:@"aa1e"]) {// 登录签到
         [self analyseReciveLoginDataWithStr:str];
-    } else if ([str hasPrefix:@"aa11"]) {
+    } else if ([str hasPrefix:@"aa11"]) {// 上报心跳
         [self showLogWithStr:[NSString stringWithFormat:@"充电桩上报心跳状态成功，服务端发过来的消息 = \n%@",data]];
-    } else {
+    } else if ([str hasPrefix:@"aa19"]) {// 刷卡信息上报
+//        0x00：验证通过
+//        0x01：未注册IC卡
+//        0x02：套餐过期
+//        0x03：账户欠费
+//        0x04：有待支付订单
+//        0x05：没有使用权限
+//        0x06：其他原因
+        [self analyseSwipeCardDataWithStr:str];
+    }
+    else {
         [self showLogWithStr:[NSString stringWithFormat:@"读取服务端发过来的消息 = %@",data]];
     }
     [self.clientSocket readDataWithTimeout:-1 tag:0];
@@ -80,6 +92,7 @@
     [self showLogWithStr:@"数据写入成功"];
 }
 
+#pragma mark - Action&SendData
 - (IBAction)connectButtonClick:(id)sender {
     //1.创建客户端scoket
     self.clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
@@ -98,8 +111,26 @@
     [self.clientSocket disconnect];
 }
 
-- (IBAction)exitToHere:(UIStoryboardSegue *)sender {
-    
+- (IBAction)swipeCardButtonClick:(id)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Title" message:nil preferredStyle:UIAlertControllerStyleAlert];
+
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+        UITextField *switchNumTf = alert.textFields.firstObject;
+        UITextField *cardNumTf = alert.textFields.lastObject;
+
+        [self swipeCardWithSwitchNum:switchNumTf.text cardNum:cardNumTf.text];
+        NSLog(@"OK pushed");
+    }]];
+
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"请输入开关号";
+    }];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"请输入卡号";
+    }];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)loginWithModel:(PileLoginModel *)model {
@@ -188,6 +219,98 @@
     [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
 }
 
+- (void)swipeCardWithSwitchNum:(NSString *)switchNum cardNum:(NSString *)cardNum {
+    //刷卡充电，需要第一步插上插座，需调用开关事件上报
+    [self switchHaveChangedWithSwitchNum:switchNum status:@"0x00" event:@"0x01"];
+    
+    [NSThread sleepForTimeInterval:1];
+    //调用刷卡信息上报
+    unsigned char send[8] = {0x68, 0x19, 0x00, 0x00, 22, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+    
+    unsigned char some[2] = {cardNum.length,switchNum.intValue};
+    [bodyData appendData:[NSData dataWithBytes:some length:2]];
+    
+    [bodyData appendData:[Tools hexToBytes:[Tools hexStringFromString:cardNum] length:20]];
+
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+    
+}
+
+- (void)switchHaveChangedWithSwitchNum:(NSString *)switchNum status:(NSString *)status event:(NSString *)event {
+    unsigned char send[8] = {0x68, 0x1d, 0x00, 0x00, 7, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+    
+    unsigned char some[3] = {switchNum.intValue,[Tools remove0xStringWithString:status].intValue,[Tools remove0xStringWithString:event].intValue};
+    [bodyData appendData:[NSData dataWithBytes:some length:3]];
+    
+    NSString *timeStr = [Tools currentdateInterval];
+    NSString *time = [Tools reverseWithString:[Tools getHexByDecimal:timeStr.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:time length:4]];
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+}
+
+//上报充电订单
+- (void)uploadChargeOrder:(PileOrderModel *)model {
+    
+}
+
+#pragma mark - 解析返回数据
+//登录签到信息解析
+- (void)analyseReciveLoginDataWithStr:(NSString *)str {
+    NSString *sign16 = [str substringWithRange:NSMakeRange(str.length - 12, 2)];
+    NSString *sign10 = [Tools hexToDecimalWithString:[Tools reverseWithString:sign16]];
+
+    //验证结果
+    NSString *result16 = [str substringWithRange:NSMakeRange(str.length - 10, 2)];
+    NSString *result10 = [Tools hexToDecimalWithString:[Tools reverseWithString:result16]];
+    NSString *status = @"";
+    if (result10.intValue == 1) {
+        status = @"该充电桩未注册";
+    } else if (result10.intValue == 0) {
+        status = @"该充电桩已注册";
+    } else {
+        status = @"Undefined";
+    }
+
+    NSString *time16 = [str substringWithRange:NSMakeRange(str.length - 8, 8)];
+    NSString *time10 = [Tools hexToDecimalWithString:[Tools reverseWithString:time16]];
+    NSString *time = [Tools timeStrWithEnglish:time10.intValue];
+    [self showLogWithStr:[NSString stringWithFormat:@"登录签到成功：\n签名为：%@\n%@\n服务器下发的时间戳为%@", sign10,status, time]];
+}
+//刷卡信息解析
+- (void)analyseSwipeCardDataWithStr:(NSString *)str {
+    NSString *result16 = [str substringWithRange:NSMakeRange(str.length - 2, 2)];
+    NSString *result10 = [Tools hexToDecimalWithString:[Tools reverseWithString:result16]];
+    NSString *status = @"";
+    if (result10.intValue == 0) {
+        status = @"验证通过";
+    } else if (result10.intValue == 1) {
+        status = @"未注册IC卡";
+    } else if (result10.intValue == 2) {
+        status = @"套餐过期";
+    } else if (result10.intValue == 3) {
+        status = @"账户欠费";
+    } else if (result10.intValue == 4) {
+        status = @"有待支付订单";
+    } else if (result10.intValue == 5) {
+        status = @"没有使用权限";
+    } else {
+        status = @"其他原因";
+    }
+    [self showLogWithStr:[NSString stringWithFormat:@"刷卡返回结果为：%@", status]];
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -215,6 +338,15 @@
             weakSelf.isHeartbeating = YES;
             [weakSelf.heartbeatButton setTitle:@"停止心跳" forState:UIControlStateNormal];
         };
+    } else if ([segue.identifier isEqualToString:@"charging_status"]) {
+        PileOrderViewController *order = (PileOrderViewController *)segue.destinationViewController;
+        order.chargeOrderBlock = ^(PileOrderModel * _Nonnull model) {
+            //上报充电订单
+            [self uploadChargeOrder:model];
+        };
+        order.chargeOrderBlock = ^(PileOrderModel * _Nonnull model) {
+            //上报充电中数据，一分钟一次
+        };
     }
 }
 
@@ -237,27 +369,8 @@
     
     return YES;//执行跳转方法
 }
-
-- (void)analyseReciveLoginDataWithStr:(NSString *)str {
-    NSString *sign16 = [str substringWithRange:NSMakeRange(str.length - 12, 2)];
-    NSString *sign10 = [Tools hexToDecimalWithString:[Tools reverseWithString:sign16]];
-
-    //验证结果
-    NSString *result16 = [str substringWithRange:NSMakeRange(str.length - 10, 2)];
-    NSString *result10 = [Tools hexToDecimalWithString:[Tools reverseWithString:result16]];
-    NSString *status = @"";
-    if (result10.intValue == 1) {
-        status = @"该充电桩未注册";
-    } else if (result10.intValue == 0) {
-        status = @"该充电桩已注册";
-    } else {
-        status = @"Undefined";
-    }
-
-    NSString *time16 = [str substringWithRange:NSMakeRange(str.length - 8, 8)];
-    NSString *time10 = [Tools hexToDecimalWithString:[Tools reverseWithString:time16]];
-    NSString *time = [Tools timeStrWithEnglish:time10.intValue];
-    [self showLogWithStr:[NSString stringWithFormat:@"登录签到成功：\n签名为：%@\n%@\n服务器下发的时间戳为%@", sign10,status, time]];
+- (IBAction)exitToHere:(UIStoryboardSegue *)sender {
+    
 }
 
 - (void)showLogWithStr:(NSString *)str {
@@ -272,6 +385,10 @@
 //    }
 //    return _checkChargingTimer;
 //}
+- (IBAction)clearLogButtonClick:(id)sender {
+    self.logStr = [[NSMutableString alloc] initWithString:@""];
+    self.tipLabel.text = self.logStr;
+}
 
 - (NSTimer *)timer {
     if (_timer == nil) {
