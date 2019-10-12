@@ -22,7 +22,7 @@
         _lat = @"28.457634";
         _providerID = @"12";
         _magicNum = @"11";
-        _count = @"8";
+        _count = @"3";
         _sign = @"3";
     }
     return self;

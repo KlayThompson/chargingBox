@@ -76,14 +76,18 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag{
     
     NSString *str = [Tools convertDataToHexStrWithData:data];
-    if ([str hasPrefix:@"aa1e"]) {// 登录签到
+    if ([str hasPrefix:@"aa50"]) {// 登录签到
         [self analyseReciveLoginDataWithStr:str];
-    } else if ([str hasPrefix:@"aa11"]) {// 上报心跳
+    } else if ([str hasPrefix:@"aa51"]) {// 上报心跳
         [self showLogWithStr:[NSString stringWithFormat:@"充电桩上报心跳状态成功，服务端发过来的消息 = \n%@",data]];
-    } else if ([str hasPrefix:@"aa19"]) {// 刷卡信息上报
+    } else if ([str hasPrefix:@"aa54"]) {// 刷卡信息上报
         [self analyseSwipeCardDataWithStr:str];
-    } else if ([str hasPrefix:@"aa1c"]) {// 上报充电订单
+    } else if ([str hasPrefix:@"aa56"]) {// 上报充电订单
         [self analyseChargeOrderWithString:str];
+    } else if ([str isEqualToString:@"aa66"]) {// 收到开启指定开关
+        [self analyseOpenSwitchInstruct:str];
+    } else if ([str isEqualToString:@"aa68"]) {// 收到远程停止充电
+        [self analyseStopChargingInstruct:str];
     }
     else {
         [self showLogWithStr:[NSString stringWithFormat:@"读取服务端发过来的消息 = %@",data]];
@@ -111,6 +115,8 @@
     }
 }
 - (IBAction)disconnectButtonClick:(id)sender {
+    [self.timer  setFireDate:[NSDate distantFuture]];
+    [self.chargingTimer setFireDate:[NSDate distantFuture]];
     [self.clientSocket disconnect];
 }
 
@@ -157,7 +163,7 @@
 
 - (void)loginWithModel:(PileLoginModel *)model {
 
-    unsigned char send[8] = {0x68, 0x1e, 0x00, 0x00, 51, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x50, 0x00, 0x00, 51, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -208,7 +214,7 @@
 - (void)heartbeat {
     
     NSInteger len = 11 + self.loginModel.count.intValue*3;
-    unsigned char send[8] = {0x68, 0x11, 0x00, 0x00, len, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x51, 0x00, 0x00, len, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -230,7 +236,15 @@
     [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)temp]] length:2]];
     
     for (int i = 0; i < self.loginModel.count.intValue; i++) {
-        unsigned char switchStatus[1] = {[Tools remove0xStringWithString:self.heartbeatModel.switchStatus].intValue};
+        int status;
+        if (i == 2) {
+            status = 3;
+        } else if (i > 2) {
+            status = 0;
+        } else {
+            status = i;
+        }
+        unsigned char switchStatus[1] = {status};
         [bodyData appendData:[NSData dataWithBytes:switchStatus length:1]];
         double switchKwh = self.heartbeatModel.switchKwh.doubleValue * 100;
         [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)switchKwh]] length:2]];
@@ -247,7 +261,7 @@
     
     [NSThread sleepForTimeInterval:1];
     //调用刷卡信息上报
-    unsigned char send[8] = {0x68, 0x19, 0x00, 0x00, 22, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x54, 0x00, 0x00, 22, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -265,7 +279,7 @@
 }
 
 - (void)switchHaveChangedWithSwitchNum:(NSString *)switchNum status:(NSString *)status event:(NSString *)event {
-    unsigned char send[8] = {0x68, 0x1d, 0x00, 0x00, 7, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x57, 0x00, 0x00, 7, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -283,7 +297,7 @@
 }
 //上报充电中数据
 - (void)uploadChargingData {
-    unsigned char send[8] = {0x68, 0x1b, 0x00, 0x00, 25, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x55, 0x00, 0x00, 25, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -325,7 +339,7 @@
 
 //上报充电订单
 - (void)uploadChargeOrder:(PileOrderModel *)model {
-    unsigned char send[8] = {0x68, 0x1c, 0x00, 0x00, 24, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x56, 0x00, 0x00, 24, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -360,7 +374,7 @@
 }
 
 - (void)uploadSwitchErrorWithErrorCode:(NSString *)errorCode {
-    unsigned char send[8] = {0x68, 0x14, 0x00, 0x00, 10, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x53, 0x00, 0x00, 10, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -434,6 +448,45 @@
     [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，用户ID：%@，流水号：%@", switchNum, userId, serialNum]];
 }
 
+//开启指定开关
+- (void)analyseOpenSwitchInstruct:(NSString *)str {
+    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 20, 8)]]];
+    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 12, 8)]]];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 2, 2)]];
+    [self showLogWithStr:[NSString stringWithFormat:@"收到平台下发开启指定开关指令，开关编号：%@，用户ID：%@，流水号：%@", switchNum, userId, serialNum]];
+    //响应指令
+    unsigned char send[8] = {0xaa, 0x66, 0x00, 0x00, 10, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    NSMutableData *bodyData = [NSMutableData new];
+    NSString *userIdRes = [Tools reverseWithString:[Tools getHexByDecimal:userId.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:userIdRes length:4]];
+    unsigned char some[1] = {switchNum.intValue};
+    [bodyData appendData:[NSData dataWithBytes:some length:1]];
+    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:serialNum.intValue]];
+    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+    
+    //需要上报开关状态
+    
+    //定时上报充电订单
+}
+
+//远程停止充电
+- (void)analyseStopChargingInstruct:(NSString *)str {
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 2, 2)]];
+
+    //响应指令
+    unsigned char send[8] = {0xaa, 0x68, 0x00, 0x00, 0x00, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    [self.clientSocket writeData:sendData withTimeout:-1 tag:0];
+    //上报充电订单
+    [self uploadChargeOrder:self.orderModel];
+    //上报开关状态
+    [self switchHaveChangedWithSwitchNum:switchNum status:@"0x00" event:@"0x04"];
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -470,6 +523,8 @@
             weakSelf.orderModel = model;
             //上报充电订单
             [weakSelf uploadChargeOrder:model];
+            //上报开关状态
+            [weakSelf switchHaveChangedWithSwitchNum:model.switchNum status:@"0x00" event:@"0x02"];
         };
         order.chargingBlock = ^(PileOrderModel * _Nonnull model) {
             //上报充电中数据，一分钟一次
