@@ -297,7 +297,7 @@
 }
 //上报充电中数据
 - (void)uploadChargingData {
-    unsigned char send[8] = {0x68, 0x55, 0x00, 0x00, 25, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x55, 0x00, 0x00, 53, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -305,11 +305,11 @@
     unsigned char switchNum[1] = {self.chargingModel.switchNum.intValue};
     [bodyData appendData:[NSData dataWithBytes:switchNum length:1]];
     
-    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.userId.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+//    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.userId.intValue]];
+//    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
     NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.serialNum.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:36]];
     
     double chargeKwh = self.chargingModel.chargeKwh.doubleValue * 100;
     NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
@@ -339,7 +339,7 @@
 
 //上报充电订单
 - (void)uploadChargeOrder:(PileOrderModel *)model {
-    unsigned char send[8] = {0x68, 0x56, 0x00, 0x00, 24, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x56, 0x00, 0x00, 52, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -347,11 +347,11 @@
     unsigned char switchNum[1] = {model.switchNum.intValue};
     [bodyData appendData:[NSData dataWithBytes:switchNum length:1]];
     
-    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:model.userId.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+//    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:model.userId.intValue]];
+//    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
     NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:model.serialNum.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:36]];
     
     double chargeKwh = model.chargeKwh.doubleValue * 100;
     NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
@@ -442,35 +442,39 @@
 
 //上报充电订单解析
 - (void)analyseChargeOrderWithString:(NSString *)str {
-    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 8, 8)]]];
-    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 16, 8)]]];
-    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 18, 2)]];
-    [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，用户ID：%@，流水号：%@", switchNum, userId, serialNum]];
+    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 36, 36)]]];
+//    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 16, 8)]]];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 37, 1)]];
+    [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，流水号：%@", switchNum, serialNum]];
 }
 
 //开启指定开关
 - (void)analyseOpenSwitchInstruct:(NSString *)str {
-    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 20, 8)]]];
-    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 12, 8)]]];
-    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 2, 2)]];
-    [self showLogWithStr:[NSString stringWithFormat:@"收到平台下发开启指定开关指令，开关编号：%@，用户ID：%@，流水号：%@", switchNum, userId, serialNum]];
+//    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 20, 8)]]];
+    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 38, 36)]]];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 1, 1)]];
+    
     //响应指令
-    unsigned char send[8] = {0xaa, 0x66, 0x00, 0x00, 10, 0x00, 0x00};
+    unsigned char send[8] = {0xaa, 0x66, 0x00, 0x00, 37, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     NSMutableData *bodyData = [NSMutableData new];
-    NSString *userIdRes = [Tools reverseWithString:[Tools getHexByDecimal:userId.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:userIdRes length:4]];
+//    NSString *userIdRes = [Tools reverseWithString:[Tools getHexByDecimal:userId.intValue]];
+//    [bodyData appendData:[Tools convertHexStrToData:userIdRes length:4]];
     unsigned char some[1] = {switchNum.intValue};
     [bodyData appendData:[NSData dataWithBytes:some length:1]];
     NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:serialNum.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:36]];
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
     [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
     
     //需要上报开关状态
+    [self switchHaveChangedWithSwitchNum:switchNum status:@"0x03" event:@"0x03"];
     
     //定时上报充电订单
+    [self uploadChargingData]; // 不做定时处理了，简化处理，上传一次
+    
+    [self showLogWithStr:[NSString stringWithFormat:@"收到平台下发开启指定开关指令，开关编号：%@，流水号：%@", switchNum, serialNum]];
 }
 
 //远程停止充电
@@ -485,6 +489,8 @@
     [self uploadChargeOrder:self.orderModel];
     //上报开关状态
     [self switchHaveChangedWithSwitchNum:switchNum status:@"0x00" event:@"0x04"];
+    
+    [self showLogWithStr:[NSString stringWithFormat:@"收到平台下发远程停止充电指令，内容为：%@", str]];
 }
 
 #pragma mark - Navigation
