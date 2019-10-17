@@ -208,7 +208,7 @@
     BatteryModel *model = [self.boxArray objectAtIndex:box - 1];
     
 //    int len = 67 + model.batteriesCount.intValue*2;
-    int len = 67 + 20*2;
+    int len = 47 + 20*2;
     
     unsigned char send[8] = {0x68, 0x13, 0x00, 0x00, len, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
@@ -218,16 +218,17 @@
     unsigned char boxId[1] = {box};
     [bodyData appendData:[NSData dataWithBytes:boxId length:1]];
     
-    [bodyData appendData:[Tools hexToBytes:[Tools hexStringFromString:model.parentNumber] length:20]];
+//    [bodyData appendData:[Tools hexToBytes:[Tools hexStringFromString:model.parentNumber] length:20]];
+    [bodyData appendData:[Tools convertHexStrToData:model.boxStatus length:1]];
 
     NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
     [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
     
-    [bodyData appendData:[Tools convertHexStrToData:model.boxStatus length:0]];
-    
-    [bodyData appendData:[Tools convertHexStrToData:@"00" length:0]];
     
     [bodyData appendData:[Tools convertHexStrToData:model.batteryStatus length:0]];
+    
+    [bodyData appendData:[Tools convertHexStrToData:@"00" length:1]];
+    
     
     double declareV = model.declareV.doubleValue * 100;
     NSString *declareVStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)declareV]];
@@ -298,20 +299,23 @@
     
     unsigned char boxId[1] = {box};
     [bodyData appendData:[NSData dataWithBytes:boxId length:1]];
-    [bodyData appendData:[Tools hexToBytes:[Tools hexStringFromString:model.parentNumber] length:20]];
+//    [bodyData appendData:[Tools hexToBytes:[Tools hexStringFromString:model.parentNumber] length:20]];
     
-    NSInteger online;
-    if (model.haveBattery) {
-        online = 0;
-    } else {
-        online = 2;
-    }
-    unsigned char isOnLine[1] = {online};
-    [bodyData appendData:[NSData dataWithBytes:isOnLine length:1]];
+//    NSInteger online;
+//    if (model.haveBattery) {
+//        online = 0;
+//    } else {
+//        online = 2;
+//    }
+//    unsigned char isOnLine[1] = {online};
+//    [bodyData appendData:[NSData dataWithBytes:isOnLine length:1]];
     
     NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
     [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
     
+    #warning 流水号，收到开门指定时候获取到
+    NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -326,24 +330,30 @@
 
     for (BatteryModel *model in self.boxArray) {
         if ([model.boxStatus isEqualToString:@"0x03"] || [model.boxStatus isEqualToString:@"03"]) {
-            unsigned char send[8] = {0x68, 0x17, 0x00, 0x00, 49, 0x00, 0x00};
+            unsigned char send[8] = {0x68, 0x17, 0x00, 0x00, 78, 0x00, 0x00};
             NSData *sendData = [NSData dataWithBytes:send length:8];
             
             NSMutableData *bodyData = [NSMutableData new];
-            NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:1001]];
-            [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+            unsigned char boxID[1] = {model.boxId.intValue};
+            [bodyData appendData:[NSData dataWithBytes:boxID length:1]];
+//            NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:1001]];
+//            [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+            #warning 流水号，收到开门指定时候获取到
+            NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+            [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
             
             NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
             [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
             
-            NSString *timeStr = [Tools currentdateInterval];
-            NSString *time = [Tools reverseWithString:[Tools getHexByDecimal:timeStr.intValue]];
-            [bodyData appendData:[Tools convertHexStrToData:time length:4]];
+//            NSString *timeStr = [Tools currentdateInterval];
+//            NSString *time = [Tools reverseWithString:[Tools getHexByDecimal:timeStr.intValue]];
+//            [bodyData appendData:[Tools convertHexStrToData:time length:4]];
             
+            //充电电量
             [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:4000]] length:2]];
-
+            //当前充电电压
             [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:6000]] length:2]];
-
+            //当前充电电流
             [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:2000]] length:2]];
 
             NSString *beginTime = [Tools reverseWithString:[Tools getHexByDecimal:[Tools currentdateInterval].intValue]];
@@ -369,11 +379,16 @@
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
-    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:1001]];
-    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
-    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:[Tools currentdateInterval].intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:4]];
+    unsigned char boxID[1] = {1};
+    [bodyData appendData:[NSData dataWithBytes:boxID length:1]];
+    
+//    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:1001]];
+//    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
+    
+    #warning 流水号，收到开门指定时候获取到
+    NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
     
     NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
     [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];

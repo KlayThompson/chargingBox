@@ -308,8 +308,8 @@
 //    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.userId.intValue]];
 //    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
-    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.serialNum.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:36]];
+    NSString *serialNumStr = [Tools hexStringFromString:self.chargingModel.serialNum];
+    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
     
     double chargeKwh = self.chargingModel.chargeKwh.doubleValue * 100;
     NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
@@ -350,8 +350,8 @@
 //    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:model.userId.intValue]];
 //    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
-    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:model.serialNum.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:36]];
+    NSString *serialNumStr = [Tools hexStringFromString:model.serialNum];
+    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
     
     double chargeKwh = model.chargeKwh.doubleValue * 100;
     NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
@@ -442,7 +442,7 @@
 
 //上报充电订单解析
 - (void)analyseChargeOrderWithString:(NSString *)str {
-    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 36, 36)]]];
+    NSString *serialNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 36, 36)]];
 //    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 16, 8)]]];
     NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 37, 1)]];
     [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，流水号：%@", switchNum, serialNum]];
@@ -451,7 +451,7 @@
 //开启指定开关
 - (void)analyseOpenSwitchInstruct:(NSString *)str {
 //    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 20, 8)]]];
-    NSString *serialNum = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 38, 36)]]];
+    NSString *serialNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 38, 36)]];
     NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 1, 1)]];
     
     //响应指令
@@ -462,8 +462,10 @@
 //    [bodyData appendData:[Tools convertHexStrToData:userIdRes length:4]];
     unsigned char some[1] = {switchNum.intValue};
     [bodyData appendData:[NSData dataWithBytes:some length:1]];
-    NSString *serialNumStr = [Tools reverseWithString:[Tools getHexByDecimal:serialNum.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:serialNumStr length:36]];
+    
+    NSString *serialNumStr = [Tools hexStringFromString:serialNum];
+    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
     [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
