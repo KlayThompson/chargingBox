@@ -167,7 +167,6 @@
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
-
     
     NSString *pileNum = [Tools hexStringFromString:model.pileNum];
     NSData *pileNumData = [Tools hexToBytes:pileNum length:20];
@@ -279,7 +278,7 @@
 }
 
 - (void)switchHaveChangedWithSwitchNum:(NSString *)switchNum status:(NSString *)status event:(NSString *)event {
-    unsigned char send[8] = {0x68, 0x57, 0x00, 0x00, 7, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x57, 0x00, 0x00, 39, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -287,9 +286,9 @@
     unsigned char some[3] = {switchNum.intValue,[Tools remove0xStringWithString:status].intValue,[Tools remove0xStringWithString:event].intValue};
     [bodyData appendData:[NSData dataWithBytes:some length:3]];
     
-    NSString *timeStr = [Tools currentdateInterval];
-    NSString *time = [Tools reverseWithString:[Tools getHexByDecimal:timeStr.intValue]];
-    [bodyData appendData:[Tools convertHexStrToData:time length:4]];
+    NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
     

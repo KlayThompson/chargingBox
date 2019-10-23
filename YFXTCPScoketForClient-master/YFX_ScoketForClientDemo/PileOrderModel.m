@@ -16,7 +16,7 @@
     if (self) {
         _switchNum = @"1";
         _userId = @"1001";
-        _serialNum = @"1570759534";
+        _serialNum = @"C129912010010";
         _chargeKwh = @"101";
         _chargeW = @"35";
         _currentV = @"220";
