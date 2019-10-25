@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ChargingPileViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UILabel *tipLabel;
 
+@property (nonatomic, strong) NSData *serialNumData;
 @end
 
 NS_ASSUME_NONNULL_END

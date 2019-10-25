@@ -48,12 +48,34 @@
     
     self.chargingModel = [PileOrderModel new];
     self.orderModel = [PileOrderModel new];
-    
+//    68660000260000d13230313931303234313535333430435034383130414e594f313931303130303031360000ff06
+//    NSString *s = @"3230313931303234313535333430435034383130414e594f313931303130303031360000";
+//
+//    NSString *string =[NSString stringWithFormat:@"%c",s];
+//    NSLog(@"");
 }
-
+//-(NSString *)gb2312toutf8:(NSData *) data
+//{
+//   
+//   NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+//    NSString *st = @"";
+//    NSString *retStr = [st ste]
+//    
+//    return retStr;
+//    
+//}
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    if (@available(iOS 13.0, *)) {
+        [self.timer  setFireDate:[NSDate distantFuture]];
+        [self.chargingTimer setFireDate:[NSDate distantFuture]];
+        [self.clientSocket disconnect];
+    } else {
+    }
+}
+
+- (void)dealloc {
     [self.timer  setFireDate:[NSDate distantFuture]];
     [self.chargingTimer setFireDate:[NSDate distantFuture]];
     [self.clientSocket disconnect];
@@ -83,10 +105,10 @@
     } else if ([str hasPrefix:@"aa54"]) {// 刷卡信息上报
         [self analyseSwipeCardDataWithStr:str];
     } else if ([str hasPrefix:@"aa56"]) {// 上报充电订单
-        [self analyseChargeOrderWithString:str];
-    } else if ([str isEqualToString:@"aa66"]) {// 收到开启指定开关
-        [self analyseOpenSwitchInstruct:str];
-    } else if ([str isEqualToString:@"aa68"]) {// 收到远程停止充电
+        [self analyseChargeOrderWithString:str data:data];
+    } else if ([str hasPrefix:@"6866"]) {// 收到开启指定开关
+        [self analyseOpenSwitchInstruct:str data:data];
+    } else if ([str hasPrefix:@"6868"]) {// 收到远程停止充电
         [self analyseStopChargingInstruct:str];
     }
     else {
@@ -235,13 +257,16 @@
     [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)temp]] length:2]];
     
     for (int i = 0; i < self.loginModel.count.intValue; i++) {
-        int status;
-        if (i == 2) {
-            status = 3;
-        } else if (i > 2) {
-            status = 0;
-        } else {
-            status = i;
+        int status = 0;
+//        if (i == 2) {
+//            status = 3;
+//        } else if (i > 2) {
+//            status = 0;
+//        } else {
+//            status = i;
+//        }
+        if (i == 1) {
+            status = 2;
         }
         unsigned char switchStatus[1] = {status};
         [bodyData appendData:[NSData dataWithBytes:switchStatus length:1]];
@@ -286,8 +311,9 @@
     unsigned char some[3] = {switchNum.intValue,[Tools remove0xStringWithString:status].intValue,[Tools remove0xStringWithString:event].intValue};
     [bodyData appendData:[NSData dataWithBytes:some length:3]];
     
-    NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
-    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+//    NSString *serialNumStr = [Tools hexStringFromString:self.serialNumber];
+//    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    [bodyData appendData:self.serialNumData];
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -307,8 +333,9 @@
 //    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:self.chargingModel.userId.intValue]];
 //    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
-    NSString *serialNumStr = [Tools hexStringFromString:self.chargingModel.serialNum];
-    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+//    NSString *serialNumStr = [Tools hexStringFromString:self.serialNumber];
+//    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    [bodyData appendData:self.serialNumData];
     
     double chargeKwh = self.chargingModel.chargeKwh.doubleValue * 100;
     NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
@@ -338,6 +365,13 @@
 
 //上报充电订单
 - (void)uploadChargeOrder:(PileOrderModel *)model {
+    //插头拔出事件上报
+    [self switchHaveChangedWithSwitchNum:model.switchNum status:@"0x00" event:@"0x02"];
+    //停止充电事件上报
+    [self switchHaveChangedWithSwitchNum:model.switchNum status:@"0x00" event:@"0x04"];
+    
+    [NSThread sleepForTimeInterval:1];
+    
     unsigned char send[8] = {0x68, 0x56, 0x00, 0x00, 52, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
@@ -349,8 +383,9 @@
 //    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:model.userId.intValue]];
 //    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
     
-    NSString *serialNumStr = [Tools hexStringFromString:model.serialNum];
-    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+//    NSString *serialNumStr = [Tools hexStringFromString:self.serialNumber];
+//    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    [bodyData appendData:self.serialNumData];
     
     double chargeKwh = model.chargeKwh.doubleValue * 100;
     NSString *chargeKwhStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)chargeKwh]];
@@ -440,19 +475,18 @@
 }
 
 //上报充电订单解析
-- (void)analyseChargeOrderWithString:(NSString *)str {
-    NSString *serialNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 36, 36)]];
-//    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 16, 8)]]];
-    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 37, 1)]];
-    [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，流水号：%@", switchNum, serialNum]];
+- (void)analyseChargeOrderWithString:(NSString *)str data:(NSData *)data{
+    NSData *serialNumD = [data subdataWithRange:NSMakeRange(data.length - 36, 36)];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 74, 2)]];
+    [self showLogWithStr:[NSString stringWithFormat:@"订单上报成功，开关编号：%@，流水号：%@", switchNum, serialNumD]];
 }
 
 //开启指定开关
-- (void)analyseOpenSwitchInstruct:(NSString *)str {
+- (void)analyseOpenSwitchInstruct:(NSString *)str data:(NSData *)data {
 //    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 20, 8)]]];
-    NSString *serialNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 38, 36)]];
-    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 1, 1)]];
-    
+    NSData *serialNumD = [data subdataWithRange:NSMakeRange(8, 36)];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 2, 2)]];
+    self.serialNumData = serialNumD;
     //响应指令
     unsigned char send[8] = {0xaa, 0x66, 0x00, 0x00, 37, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
@@ -462,8 +496,8 @@
     unsigned char some[1] = {switchNum.intValue};
     [bodyData appendData:[NSData dataWithBytes:some length:1]];
     
-    NSString *serialNumStr = [Tools hexStringFromString:serialNum];
-    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+//    NSString *serialNumStr = [Tools hexStringFromString:serialNum];
+    [bodyData appendData:serialNumD];
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -475,7 +509,7 @@
     //定时上报充电订单
     [self uploadChargingData]; // 不做定时处理了，简化处理，上传一次
     
-    [self showLogWithStr:[NSString stringWithFormat:@"收到平台下发开启指定开关指令，开关编号：%@，流水号：%@", switchNum, serialNum]];
+    [self showLogWithStr:[NSString stringWithFormat:@"收到平台下发开启指定开关指令，开关编号：%@，流水号：%@", switchNum, serialNumD]];
 }
 
 //远程停止充电

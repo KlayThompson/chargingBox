@@ -14,7 +14,7 @@
 {
     self = [super init];
     if (self) {
-        _pileNum = @"AY123456789";
+        _pileNum = @"CP4810ANYO191010001";
         _pileVersion = @"10101";
         _pileType = @"0x11";
         _totalKw = @"10";
@@ -22,7 +22,7 @@
         _lat = @"28.457634";
         _providerID = @"12";
         _magicNum = @"11";
-        _count = @"3";
+        _count = @"10";
         _sign = @"3";
     }
     return self;

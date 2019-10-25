@@ -7,7 +7,7 @@
 //
 
 #import "PileOrderModel.h"
-
+#import "Tools.h"
 @implementation PileOrderModel
 
 - (instancetype)init
@@ -21,9 +21,10 @@
         _chargeW = @"35";
         _currentV = @"220";
         _currentA = @"25";
-        _startTime = @"1570759534";
+        _startTime = [Tools currentdateInterval];
         _duration = @"900";
-        _stopTime = @"1570760434";
+        double a = _startTime.doubleValue + 900;
+        _stopTime = [NSString stringWithFormat:@"%.0f", a];
         _stopReason = @"0x00";
     }
     return self;
