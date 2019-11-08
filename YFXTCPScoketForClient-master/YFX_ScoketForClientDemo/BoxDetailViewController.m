@@ -55,6 +55,32 @@
     self.saveBlock(newModel);
 }
 
+- (IBAction)heartbeatButtonClick:(id)sender {
+    BatteryModel *newModel = [BatteryModel new];
+    newModel.boxId = self.currentModel.boxId;
+    newModel.batteryId = self.currentModel.batteryId;
+    newModel.isOpen = self.isOpen.on;
+    newModel.haveBattery = self.haveBattery.on;
+    if (self.isOpen.on && self.haveBattery.on) {
+        newModel.boxStatus = self.statusWithDoorOpen.text;
+    } else {
+        newModel.boxStatus = self.statusWithDoorClose.text;
+    }
+    newModel.batteryStatus = self.batteryStatus.text;
+    newModel.declareV = self.declareV.text;
+    newModel.totalAh = self.totalAh.text;
+    newModel.leftAh = self.leftAh.text;
+    newModel.SOC = self.soc.text;
+    newModel.batteriesCount = self.count.text;
+    
+    if (self.heartbeatBlock) {
+        self.heartbeatBlock(newModel);
+    }
+}
+
+
+
+
 /*
 #pragma mark - Navigation
 

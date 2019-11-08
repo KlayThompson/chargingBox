@@ -111,24 +111,26 @@
     double lonD = lonStr.doubleValue * 100000;
     NSString *lonByteStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)lonD]];
     NSData *lonData = [Tools convertHexStrToData:lonByteStr length:4];
+    [bodyData appendData:[NSData dataWithBytes:[lonData bytes] length:4]];
 
     NSString *latStr = @"39.916527";
     double latD = latStr.doubleValue * 100000;
     NSString *str = [Tools getHexByDecimal:(int)latD];
     NSString *latByteStr = [Tools reverseWithString:str];
     NSData *latData =[Tools convertHexStrToData:latByteStr length:4];
+    [bodyData appendData:[NSData dataWithBytes:[latData bytes] length:4]];
+    
+    unsigned char provider[1] = {0x09};
+    [bodyData appendData:[NSData dataWithBytes:provider length:1]];
     
     NSString *magicNum = @"1234";
     NSString *magicByteStr = [Tools reverseWithString:[Tools getHexByDecimal:magicNum.intValue]];
     NSData *magicData = [Tools convertHexStrToData:magicByteStr length:4];
-    
-    [bodyData appendData:[NSData dataWithBytes:[lonData bytes] length:4]];
-    [bodyData appendData:[NSData dataWithBytes:[latData bytes] length:4]];
-    unsigned char provider[1] = {0x09};
-    [bodyData appendData:[NSData dataWithBytes:provider length:1]];
     [bodyData appendData:[NSData dataWithBytes:[magicData bytes] length:4]];
+    
     unsigned char other[2] = {self.boxModel.boxNumber.intValue,10};
     [bodyData appendData:[NSData dataWithBytes:other length:2]];
+    
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
     
@@ -140,7 +142,7 @@
 //    sender.selected = !sender.selected;
 //    [sender setBackgroundColor:[UIColor orangeColor]];
     //开始上报心跳
-    unsigned char send[8] = {0x68, 0x11, 0x00, 0x00, 14, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x11, 0x00, 0x00, 13, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -168,8 +170,8 @@
     NSString *humStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)hum]];
     [bodyData appendData:[Tools convertHexStrToData:humStr length:2]];
     
-    unsigned char count[1] = {self.boxModel.boxNumber.intValue};
-    [bodyData appendData:[NSData dataWithBytes:count length:1]];
+//    unsigned char count[1] = {self.boxModel.boxNumber.intValue};
+//    [bodyData appendData:[NSData dataWithBytes:count length:1]];
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -292,7 +294,7 @@
     [self.boxArray addObjectsFromArray:@[self.box1Model, self.box2Model, self.box3Model, self.box4Model, self.box5Model, self.box6Model, self.box7Model, self.box8Model]];
     BatteryModel *model = [self.boxArray objectAtIndex:box - 1];
 
-    unsigned char send[8] = {0x68, 0x16, 0x00, 0x00, 48, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x16, 0x00, 0x00, 63, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -375,7 +377,7 @@
 
 /// 上报充电订单数据
 - (void)uploadChargeOrderWithOrderModel:(OrderModel *)model {
-    unsigned char send[8] = {0x68, 0x18, 0x00, 0x00, 51, 0x00, 0x00};
+    unsigned char send[8] = {0x68, 0x18, 0x00, 0x00, 80, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
@@ -416,6 +418,166 @@
     
     unsigned char leftCapcity[1] = {model.leftCapcity.intValue};
     [bodyData appendData:[NSData dataWithBytes:leftCapcity length:1]];
+    
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+}
+
+- (IBAction)swipeCardButtonClick:(id)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Title" message:nil preferredStyle:UIAlertControllerStyleAlert];
+
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+            UITextField *cardNumTf = alert.textFields.lastObject;
+
+            [self swipeCardWithCardNum:cardNumTf.text];
+            NSLog(@"OK pushed");
+        }]];
+
+        [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            textField.placeholder = @"请输入卡号";
+        }];
+        [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+
+        [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)swipeCardWithCardNum:(NSString *)cardNum {
+    unsigned char send[8] = {0x68, 0x19, 0x00, 0x00, 21, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+    
+    unsigned char numLength[1] = {cardNum.length};
+    [bodyData appendData:[NSData dataWithBytes:numLength length:1]];
+    
+    NSString *cardNumStr16 = [Tools hexStringFromString:cardNum];
+    NSData *cardNumData = [Tools hexToBytes:cardNumStr16 length:20];
+    [bodyData appendData:cardNumData];
+    
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+}
+
+- (IBAction)batteryLoginButtonClick:(id)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Title" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+        UITextField *batteryNumTf = alert.textFields.firstObject;
+        UITextField *batteryVersionTf = [alert.textFields objectAtIndex:1];
+        UITextField *batteryTypeTf = alert.textFields.lastObject;
+        [self batteryLoginWithBatteryNum:batteryNumTf.text batteryV:batteryVersionTf.text batteryType:batteryTypeTf.text];
+        NSLog(@"OK pushed");
+    }]];
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"请输入电池编号";
+    }];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"请输入电池型号";
+    }];
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"请输入电池类型";
+    }];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)batteryLoginWithBatteryNum:(NSString *)batteryNum batteryV:(NSString *)batteryV batteryType:(NSString *)batteryType {
+    
+    unsigned char send[8] = {0x68, 0x30, 0x00, 0x00, 46, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+    
+    NSString *batteryNumStr = [Tools hexStringFromString:batteryNum];
+    [bodyData appendData:[Tools hexToBytes:batteryNumStr length:26]];
+    
+    NSString *batteryVStr16 = [Tools hexStringFromString:batteryV];
+    [bodyData appendData:[Tools hexToBytes:batteryVStr16 length:10]];
+    
+    unsigned char type[1] = {[Tools remove0xStringWithString:batteryType].intValue};
+    [bodyData appendData:[NSData dataWithBytes:type length:1]];
+    
+    unsigned char body[4] = {0x01,0x02,0x03,8};
+    NSData *data = [NSData dataWithBytes:body length:4];
+    [bodyData appendData:data];
+    
+    NSString *magicByteStr = [Tools reverseWithString:[Tools getHexByDecimal:10086]];
+    NSData *magicData = [Tools convertHexStrToData:magicByteStr length:4];
+    [bodyData appendData:[NSData dataWithBytes:[magicData bytes] length:4]];
+    
+    unsigned char sign[1] = {3};
+    [bodyData appendData:[NSData dataWithBytes:sign length:1]];
+    
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+}
+
+- (void)batteryHeartbeatWithBatteryModel:(BatteryModel *)model {
+    unsigned char send[8] = {0x68, 0x31, 0x00, 0x00, 67, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+    
+    unsigned locationType[1] = {0x00};
+    [bodyData appendData:[NSData dataWithBytes:locationType length:1]];
+    
+    NSString *lonStr = @"116.397128";
+    double lonD = lonStr.doubleValue * 100000;
+    NSString *lonByteStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)lonD]];
+    NSData *lonData = [Tools convertHexStrToData:lonByteStr length:4];
+    [bodyData appendData:[NSData dataWithBytes:[lonData bytes] length:4]];
+
+    NSString *latStr = @"39.916527";
+    double latD = latStr.doubleValue * 100000;
+    NSString *str = [Tools getHexByDecimal:(int)latD];
+    NSString *latByteStr = [Tools reverseWithString:str];
+    NSData *latData =[Tools convertHexStrToData:latByteStr length:4];
+    [bodyData appendData:[NSData dataWithBytes:[latData bytes] length:4]];
+    
+    unsigned batteryStaus[1] = {0x00};
+    [bodyData appendData:[NSData dataWithBytes:batteryStaus length:1]];
+    
+    double declareV = model.declareV.doubleValue * 100;
+    NSString *declareVStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)declareV]];
+    [bodyData appendData:[Tools convertHexStrToData:declareVStr length:2]];
+    
+    double temp = self.boxModel.boxTemperature.doubleValue * 100;
+    NSString *tempStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)temp]];
+    [bodyData appendData:[Tools convertHexStrToData:tempStr length:2]];
+    
+    NSString *cellTemp1 = [Tools reverseWithString:[Tools getHexByDecimal:40]];
+    [bodyData appendData:[Tools convertHexStrToData:cellTemp1 length:2]];
+    
+    NSString *cellTemp2 = [Tools reverseWithString:[Tools getHexByDecimal:42]];
+    [bodyData appendData:[Tools convertHexStrToData:cellTemp2 length:2]];
+    
+    NSString *cardTemp = [Tools reverseWithString:[Tools getHexByDecimal:28]];
+    [bodyData appendData:[Tools convertHexStrToData:cardTemp length:2]];
+    
+    double cap = model.totalAh.doubleValue * 100;
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)cap]] length:2]];
+
+    double leftCap = model.leftAh.doubleValue * 100;
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)leftCap]] length:2]];
+    
+    unsigned left[2] = {model.SOC.intValue, 8};
+    [bodyData appendData:[NSData dataWithBytes:left length:2]];
+    
+    for (int i = 0; i < 20; i++) {
+        unsigned char v[2] = {11};
+        [bodyData appendData:[NSData dataWithBytes:v length:2]];
+    }
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -501,6 +663,9 @@
             detail.currentModel = self.box1Model;
             detail.saveBlock = ^(BatteryModel * _Nonnull newModel) {
                 weakSelf.box1Model = newModel;
+            };
+            detail.heartbeatBlock = ^(BatteryModel * _Nonnull model) {
+                [weakSelf batteryHeartbeatWithBatteryModel:model];
             };
         } else if ([segue.identifier isEqualToString:@"box2"]) {
             

@@ -485,7 +485,7 @@
 - (void)analyseOpenSwitchInstruct:(NSString *)str data:(NSData *)data {
 //    NSString *userId = [Tools hexToDecimalWithString:[Tools reverseWithString:[str substringWithRange:NSMakeRange(str.length - 20, 8)]]];
     NSData *serialNumD = [data subdataWithRange:NSMakeRange(8, 36)];
-    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 2, 2)]];
+    NSString *switchNum = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 10, 2)]];
     self.serialNumData = serialNumD;
     //响应指令
     unsigned char send[8] = {0xaa, 0x66, 0x00, 0x00, 37, 0x00, 0x00};

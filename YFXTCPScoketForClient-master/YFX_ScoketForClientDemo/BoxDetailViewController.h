@@ -12,11 +12,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^SaveBlock)(BatteryModel *newModel);
+typedef void(^HeartbeatBlock)(BatteryModel *model);
 
 
 @interface BoxDetailViewController : UIViewController
 
 @property (nonatomic, copy) SaveBlock saveBlock;
+@property (nonatomic, copy) HeartbeatBlock heartbeatBlock;
 
 @property (nonatomic, strong) BatteryModel *currentModel;
 @property (weak, nonatomic) IBOutlet UISwitch *isOpen;
