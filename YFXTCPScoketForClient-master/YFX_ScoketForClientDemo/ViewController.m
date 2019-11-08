@@ -25,6 +25,7 @@
 @property (nonatomic, strong) NSMutableString *logStr;
 @property (nonatomic, strong) NSArray *titleArr;
 @property (nonatomic, copy) NSMutableArray *boxArray;
+@property (nonatomic, strong) NSData *serialNumData;
 
 @end
 
@@ -54,13 +55,26 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag{
     
     [self showLogWithStr:[NSString stringWithFormat:@"读取服务端发过来的消息 = %@",data]];
+    NSString *str = [Tools convertDataToHexStrWithData:data];
+    if ([str hasPrefix:@"682a"]) { //打开仓门
+        [self analyseOpenDoorWithData:data];
+    }
     [self.clientSocket readDataWithTimeout:-1 tag:0];
 }
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag {
     [self showLogWithStr:@"数据写入成功"];
 }
 
-
+#pragma mark - Analyse
+- (void)analyseOpenDoorWithData:(NSData *)data {
+    NSString *str = [Tools convertDataToHexStrWithData:data];
+    NSData *serialNumD = [data subdataWithRange:NSMakeRange(8, 36)];
+    self.serialNumData = serialNumD;
+    NSString *boxId = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 2, 2)]];
+    NSString *action = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 4, 2)]];
+    NSString *actionStr = action.intValue == 0 ? @"还电池" : @"取电池";
+    [self showLogWithStr:[NSString stringWithFormat:@"收到开电池仓门指令，流水号data：%@，状态为：%@，电池仓ID为：%@", serialNumD, actionStr, boxId]];
+}
 
 #pragma mark - Action
 
@@ -315,9 +329,12 @@
     NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
     [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
     
-    #warning 流水号，收到开门指定时候获取到
-    NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
-    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    if (self.serialNumData) {
+        [bodyData appendData:self.serialNumData];
+    } else {
+        NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+        [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    }
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -338,11 +355,13 @@
             NSMutableData *bodyData = [NSMutableData new];
             unsigned char boxID[1] = {model.boxId.intValue};
             [bodyData appendData:[NSData dataWithBytes:boxID length:1]];
-//            NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:1001]];
-//            [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
-            #warning 流水号，收到开门指定时候获取到
-            NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
-            [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+            
+            if (self.serialNumData) {
+                [bodyData appendData:self.serialNumData];
+            } else {
+                NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+                [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+            }
             
             NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
             [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
@@ -385,12 +404,12 @@
     unsigned char boxID[1] = {1};
     [bodyData appendData:[NSData dataWithBytes:boxID length:1]];
     
-//    NSString *userId = [Tools reverseWithString:[Tools getHexByDecimal:1001]];
-//    [bodyData appendData:[Tools convertHexStrToData:userId length:4]];
-    
-    #warning 流水号，收到开门指定时候获取到
-    NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
-    [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    if (self.serialNumData) {
+        [bodyData appendData:self.serialNumData];
+    } else {
+        NSString *serialNumStr = [Tools hexStringFromString:@"C129912010010"];
+        [bodyData appendData:[Tools hexToBytes:serialNumStr length:36]];
+    }
     
     NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
     [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
