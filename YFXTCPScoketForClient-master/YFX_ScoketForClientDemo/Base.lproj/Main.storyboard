@@ -3,7 +3,7 @@
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -19,7 +19,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="joy-p2-pWZ">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="joy-p2-pWZ">
                                 <rect key="frame" x="0.0" y="44" width="414" height="692"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xz7-aH-tRB" userLabel="doorView">
@@ -281,24 +281,25 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hM6-7l-orl" userLabel="directiveView">
-                                        <rect key="frame" x="0.0" y="200" width="414" height="302"/>
+                                        <rect key="frame" x="0.0" y="200" width="414" height="160"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3jE-0j-Qgb">
-                                                <rect key="frame" x="0.0" y="0.0" width="138" height="100"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ryD-9L-Lwf">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="80" id="1f4-K9-4ri"/>
+                                                            <constraint firstAttribute="height" constant="40" id="1f4-K9-4ri"/>
                                                             <constraint firstAttribute="width" constant="80" id="5AX-pV-SzM"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="连接">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -308,27 +309,28 @@
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="100" id="2oi-bk-46w"/>
+                                                    <constraint firstAttribute="height" constant="50" id="2oi-bk-46w"/>
                                                     <constraint firstItem="ryD-9L-Lwf" firstAttribute="centerX" secondItem="3jE-0j-Qgb" secondAttribute="centerX" id="Wrl-ey-EGd"/>
                                                     <constraint firstItem="ryD-9L-Lwf" firstAttribute="centerY" secondItem="3jE-0j-Qgb" secondAttribute="centerY" id="phy-9f-0zm"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DFx-e0-3WT">
-                                                <rect key="frame" x="138" y="0.0" width="138" height="100"/>
+                                                <rect key="frame" x="138" y="0.0" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wih-j4-jI2">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="0ks-Zl-Jcp"/>
-                                                            <constraint firstAttribute="height" constant="80" id="FoY-xb-MgN"/>
+                                                            <constraint firstAttribute="height" constant="40" id="FoY-xb-MgN"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="断开连接">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -339,26 +341,27 @@
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
                                                     <constraint firstItem="Wih-j4-jI2" firstAttribute="centerX" secondItem="DFx-e0-3WT" secondAttribute="centerX" id="AVe-lY-vt4"/>
-                                                    <constraint firstAttribute="height" constant="100" id="SBr-36-KnX"/>
+                                                    <constraint firstAttribute="height" constant="50" id="SBr-36-KnX"/>
                                                     <constraint firstItem="Wih-j4-jI2" firstAttribute="centerY" secondItem="DFx-e0-3WT" secondAttribute="centerY" id="W0p-DW-Hxr"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F3L-Is-ZJO">
-                                                <rect key="frame" x="276" y="0.0" width="138" height="100"/>
+                                                <rect key="frame" x="276" y="0.0" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZfT-Gx-zCw">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="hgp-tK-lgh"/>
-                                                            <constraint firstAttribute="height" constant="80" id="zPk-Tf-xz4"/>
+                                                            <constraint firstAttribute="height" constant="40" id="zPk-Tf-xz4"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="初始化">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -370,39 +373,40 @@
                                                 <constraints>
                                                     <constraint firstItem="ZfT-Gx-zCw" firstAttribute="centerY" secondItem="F3L-Is-ZJO" secondAttribute="centerY" id="2eH-zp-Fnf"/>
                                                     <constraint firstItem="ZfT-Gx-zCw" firstAttribute="centerX" secondItem="F3L-Is-ZJO" secondAttribute="centerX" id="B0M-iF-Q9X"/>
-                                                    <constraint firstAttribute="height" constant="100" id="QFC-mA-Bx0"/>
+                                                    <constraint firstAttribute="height" constant="50" id="QFC-mA-Bx0"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kdl-Zf-FcE" userLabel="line2">
-                                                <rect key="frame" x="138" y="0.0" width="0.66666666666665719" height="302"/>
+                                                <rect key="frame" x="138" y="0.0" width="0.66666666666665719" height="160"/>
                                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="0.5" id="Sai-G2-hx8"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s91-42-IVa" userLabel="line3">
-                                                <rect key="frame" x="275.66666666666669" y="0.0" width="0.33333333333331439" height="302"/>
+                                                <rect key="frame" x="275.66666666666669" y="0.0" width="0.33333333333331439" height="160"/>
                                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="0.5" id="XUv-B1-zo3"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="X0H-h0-7wo">
-                                                <rect key="frame" x="0.0" y="100.66666666666669" width="138" height="100"/>
+                                                <rect key="frame" x="0.0" y="50.666666666666686" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z5N-51-ZaX">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="43f-cS-tog"/>
-                                                            <constraint firstAttribute="height" constant="80" id="Ect-VO-Wl1"/>
+                                                            <constraint firstAttribute="height" constant="40" id="Ect-VO-Wl1"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="登录签到">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -414,26 +418,27 @@
                                                 <constraints>
                                                     <constraint firstItem="z5N-51-ZaX" firstAttribute="centerX" secondItem="X0H-h0-7wo" secondAttribute="centerX" id="9I6-4W-8Hy"/>
                                                     <constraint firstItem="z5N-51-ZaX" firstAttribute="centerY" secondItem="X0H-h0-7wo" secondAttribute="centerY" id="Cpb-yf-DsM"/>
-                                                    <constraint firstAttribute="height" constant="100" id="Pkl-Sd-BOV"/>
+                                                    <constraint firstAttribute="height" constant="50" id="Pkl-Sd-BOV"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3GW-Z6-kch">
-                                                <rect key="frame" x="138.66666666666666" y="100" width="136.99999999999997" height="100"/>
+                                                <rect key="frame" x="138.66666666666666" y="50" width="136.99999999999997" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MXt-nt-G9N">
-                                                        <rect key="frame" x="28.333333333333343" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="28.333333333333343" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="Vga-c2-TxA"/>
-                                                            <constraint firstAttribute="height" constant="80" id="kgo-yw-uZR"/>
+                                                            <constraint firstAttribute="height" constant="40" id="kgo-yw-uZR"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="电柜心跳">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <state key="selected" title="STOP P"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -444,27 +449,27 @@
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
                                                     <constraint firstItem="MXt-nt-G9N" firstAttribute="centerY" secondItem="3GW-Z6-kch" secondAttribute="centerY" id="1Z8-3E-l6K"/>
-                                                    <constraint firstAttribute="height" constant="100" id="9fT-Bz-50h"/>
+                                                    <constraint firstAttribute="height" constant="50" id="9fT-Bz-50h"/>
                                                     <constraint firstItem="MXt-nt-G9N" firstAttribute="centerX" secondItem="3GW-Z6-kch" secondAttribute="centerX" id="Iyr-Yz-qkU"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cIT-vL-sAZ">
-                                                <rect key="frame" x="276" y="100" width="138" height="100"/>
+                                                <rect key="frame" x="276" y="50" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JMm-2m-Ay4">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="80" id="Mgb-Gl-p6z"/>
+                                                            <constraint firstAttribute="height" constant="40" id="Mgb-Gl-p6z"/>
                                                             <constraint firstAttribute="width" constant="80" id="bcY-LY-bAK"/>
                                                         </constraints>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="状态上报">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -474,32 +479,33 @@
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="100" id="024-qj-MPu"/>
+                                                    <constraint firstAttribute="height" constant="50" id="024-qj-MPu"/>
                                                     <constraint firstItem="JMm-2m-Ay4" firstAttribute="centerX" secondItem="cIT-vL-sAZ" secondAttribute="centerX" id="2Jy-or-UsX"/>
                                                     <constraint firstItem="JMm-2m-Ay4" firstAttribute="centerY" secondItem="cIT-vL-sAZ" secondAttribute="centerY" id="XK2-Wh-9oz"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="96H-nn-RWJ" userLabel="line4">
-                                                <rect key="frame" x="0.0" y="301.66666666666663" width="414" height="0.33333333333331439"/>
+                                                <rect key="frame" x="0.0" y="159.66666666666669" width="414" height="0.33333333333334281"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="0.5" id="SQF-Z2-VCw"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0fN-ts-5IW">
-                                                <rect key="frame" x="0.0" y="201" width="138" height="100"/>
+                                                <rect key="frame" x="0.0" y="101" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="93G-Id-MMe">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="U1V-0i-Ogv"/>
-                                                            <constraint firstAttribute="height" constant="80" id="VdA-Ut-EBU"/>
+                                                            <constraint firstAttribute="height" constant="40" id="VdA-Ut-EBU"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="关门"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -509,32 +515,33 @@
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="100" id="7By-An-IKf"/>
+                                                    <constraint firstAttribute="height" constant="50" id="7By-An-IKf"/>
                                                     <constraint firstItem="93G-Id-MMe" firstAttribute="centerX" secondItem="0fN-ts-5IW" secondAttribute="centerX" id="bDg-2I-H6A"/>
                                                     <constraint firstItem="93G-Id-MMe" firstAttribute="centerY" secondItem="0fN-ts-5IW" secondAttribute="centerY" id="cYE-td-eS3"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V6b-M7-WlA" userLabel="line5">
-                                                <rect key="frame" x="0.0" y="200.66666666666669" width="414" height="0.33333333333334281"/>
+                                                <rect key="frame" x="0.0" y="100.66666666666669" width="414" height="0.3333333333333286"/>
                                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="0.5" id="ZPf-1i-dUZ"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6XN-aA-kuV">
-                                                <rect key="frame" x="138.66666666666666" y="201" width="136.99999999999997" height="100"/>
+                                                <rect key="frame" x="138.66666666666666" y="101" width="136.99999999999997" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sc8-ej-GNX">
-                                                        <rect key="frame" x="28.333333333333343" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="28.333333333333343" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="fxk-f4-zBh"/>
-                                                            <constraint firstAttribute="height" constant="80" id="gO2-Rp-hHa"/>
+                                                            <constraint firstAttribute="height" constant="40" id="gO2-Rp-hHa"/>
                                                         </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="充电上报"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -546,24 +553,24 @@
                                                 <constraints>
                                                     <constraint firstItem="sc8-ej-GNX" firstAttribute="centerX" secondItem="6XN-aA-kuV" secondAttribute="centerX" id="GTj-OU-Fhn"/>
                                                     <constraint firstItem="sc8-ej-GNX" firstAttribute="centerY" secondItem="6XN-aA-kuV" secondAttribute="centerY" id="gMc-zS-kSV"/>
-                                                    <constraint firstAttribute="height" constant="100" id="wFp-gg-DDl"/>
+                                                    <constraint firstAttribute="height" constant="50" id="wFp-gg-DDl"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F6V-QV-hmI">
-                                                <rect key="frame" x="276" y="201" width="138" height="100"/>
+                                                <rect key="frame" x="276" y="101" width="138" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ggy-63-SUn">
-                                                        <rect key="frame" x="29" y="10" width="80" height="80"/>
+                                                        <rect key="frame" x="29" y="5" width="80" height="40"/>
                                                         <color key="backgroundColor" red="0.6705882353" green="0.23529411759999999" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="ARW-Us-UZT"/>
-                                                            <constraint firstAttribute="height" constant="80" id="mBE-oK-chg"/>
+                                                            <constraint firstAttribute="height" constant="40" id="mBE-oK-chg"/>
                                                         </constraints>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <state key="normal" title="订单上报"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                <integer key="value" value="40"/>
+                                                                <integer key="value" value="3"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                         <connections>
@@ -574,12 +581,12 @@
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
                                                     <constraint firstItem="Ggy-63-SUn" firstAttribute="centerY" secondItem="F6V-QV-hmI" secondAttribute="centerY" id="3Na-zq-svf"/>
-                                                    <constraint firstAttribute="height" constant="100" id="7es-kY-404"/>
+                                                    <constraint firstAttribute="height" constant="50" id="7es-kY-404"/>
                                                     <constraint firstItem="Ggy-63-SUn" firstAttribute="centerX" secondItem="F6V-QV-hmI" secondAttribute="centerX" id="BpX-Vd-n3M"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bNp-qy-JdY" userLabel="line1">
-                                                <rect key="frame" x="0.0" y="100" width="414" height="0.6666666666666714"/>
+                                                <rect key="frame" x="0.0" y="50" width="414" height="0.6666666666666643"/>
                                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="0.5" id="JiU-9C-0mX"/>
@@ -619,7 +626,7 @@
                                             <constraint firstAttribute="bottom" secondItem="Kdl-Zf-FcE" secondAttribute="bottom" id="h6A-1C-Rhh"/>
                                             <constraint firstItem="Kdl-Zf-FcE" firstAttribute="leading" secondItem="3jE-0j-Qgb" secondAttribute="trailing" id="hPP-hb-zDP"/>
                                             <constraint firstItem="Kdl-Zf-FcE" firstAttribute="leading" secondItem="X0H-h0-7wo" secondAttribute="trailing" id="iFv-jM-54y"/>
-                                            <constraint firstAttribute="height" constant="302" id="jMe-jJ-pzG"/>
+                                            <constraint firstAttribute="height" constant="160" id="jMe-jJ-pzG"/>
                                             <constraint firstItem="Kdl-Zf-FcE" firstAttribute="top" secondItem="hM6-7l-orl" secondAttribute="top" id="mmM-Vb-ddS"/>
                                             <constraint firstItem="3jE-0j-Qgb" firstAttribute="top" secondItem="hM6-7l-orl" secondAttribute="top" id="nWd-9D-sBc"/>
                                             <constraint firstItem="cIT-vL-sAZ" firstAttribute="top" secondItem="F3L-Is-ZJO" secondAttribute="bottom" id="qgC-7H-Eeb"/>
@@ -636,7 +643,7 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zlr-3F-Laz">
-                                        <rect key="frame" x="29.999999999999996" y="532" width="41.666666666666657" height="20.333333333333371"/>
+                                        <rect key="frame" x="29.999999999999996" y="390" width="41.666666666666657" height="20.333333333333314"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.84705882349999995" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
