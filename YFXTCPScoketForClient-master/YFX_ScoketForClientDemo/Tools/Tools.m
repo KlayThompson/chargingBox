@@ -209,13 +209,13 @@
     if ([boxID isEqualToString:@"box1"]) {
         
         model.boxId = @"1";
-        model.parentNumber = @"AY0123456";
+        model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191001";
         model.boxStatus = @"03";//充电中
         model.batteryStatus = @"0C";
         model.declareV = @"60";
-        model.totalAh = @"800";
-        model.leftAh = @"200";
+        model.totalAh = @"8";
+        model.leftAh = @"2";
         model.SOC = @"40";
         model.batteriesCount = @"10";
         model.isOpen = false;
@@ -223,13 +223,13 @@
         
     } else if ([boxID isEqualToString:@"box2"]) {
         model.boxId = @"2";
-        model.parentNumber = @"AY0123456";
+        model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191002";
         model.boxStatus = @"0x04"; //充满待用
         model.batteryStatus = @"0x0D";
         model.declareV = @"60";
-        model.totalAh = @"800";
-        model.leftAh = @"800";
+        model.totalAh = @"8";
+        model.leftAh = @"8";
         model.SOC = @"40";
         model.batteriesCount = @"10";
         model.isOpen = false;
@@ -237,27 +237,27 @@
         
     } else if ([boxID isEqualToString:@"box3"]) {
         model.boxId = @"3";
-        model.parentNumber = @"AY0123456";
-        model.batteryId = @"";
+        model.parentNumber = @"AY01A00YX18110009";
+        model.batteryId = @"20191004";
         model.boxStatus = @"0x00"; //无电池
-        model.batteryStatus = @"";
-        model.declareV = @"";
-        model.totalAh = @"";
-        model.leftAh = @"";
-        model.SOC = @"";
-        model.batteriesCount = @"";
+        model.batteryStatus = @"0";
+        model.declareV = @"0";
+        model.totalAh = @"0";
+        model.leftAh = @"0";
+        model.SOC = @"0";
+        model.batteriesCount = @"0";
         model.isOpen = false;
         model.haveBattery = false;
         
     } else if ([boxID isEqualToString:@"box4"]) {
         model.boxId = @"4";
-        model.parentNumber = @"AY0123456";
+        model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191004";
         model.boxStatus = @"0x03";//充电中
         model.batteryStatus = @"0x0C";
         model.declareV = @"60";
-        model.totalAh = @"800";
-        model.leftAh = @"600";
+        model.totalAh = @"8";
+        model.leftAh = @"6";
         model.SOC = @"40";
         model.batteriesCount = @"7";
         model.isOpen = false;
@@ -265,13 +265,13 @@
         
     } else if ([boxID isEqualToString:@"box5"]) {
         model.boxId = @"5";
-        model.parentNumber = @"AY0123456";
+        model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191005";
         model.boxStatus = @"0x05";//待取电池中
         model.batteryStatus = @"0x0D";
         model.declareV = @"60";
-        model.totalAh = @"800";
-        model.leftAh = @"800";
+        model.totalAh = @"8";
+        model.leftAh = @"8";
         model.SOC = @"40";
         model.batteriesCount = @"10";
         model.isOpen = true;
@@ -279,27 +279,27 @@
         
     } else if ([boxID isEqualToString:@"box6"]) {
         model.boxId = @"6";
-        model.parentNumber = @"AY0123456";
-        model.batteryId = @"";
+        model.parentNumber = @"AY01A00YX18110009";
+        model.batteryId = @"0";
         model.boxStatus = @"0x06";//待还电池中
-        model.batteryStatus = @"";
-        model.declareV = @"";
-        model.totalAh = @"";
-        model.leftAh = @"";
-        model.SOC = @"";
-        model.batteriesCount = @"";
+        model.batteryStatus = @"0";
+        model.declareV = @"0";
+        model.totalAh = @"00";
+        model.leftAh = @"0";
+        model.SOC = @"0";
+        model.batteriesCount = @"0";
         model.isOpen = true;
         model.haveBattery = false;
         
     } else if ([boxID isEqualToString:@"box7"]) {
         model.boxId = @"7";
-        model.parentNumber = @"AY0123456";
+        model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191007";
         model.boxStatus = @"0x01";//故障
         model.batteryStatus = @"0x0E";//电池故障
         model.declareV = @"60";
-        model.totalAh = @"800";
-        model.leftAh = @"300";
+        model.totalAh = @"8";
+        model.leftAh = @"3";
         model.SOC = @"40";
         model.batteriesCount = @"10";
         model.isOpen = false;
@@ -307,15 +307,15 @@
         
     } else if ([boxID isEqualToString:@"box8"]) {
         model.boxId = @"8";
-        model.parentNumber = @"AY0123456";
-        model.batteryId = @"";
+        model.parentNumber = @"AY01A00YX18110009";
+        model.batteryId = @"0";
         model.boxStatus = @"0x09";//仓门已开，出现故障
-        model.batteryStatus = @"";//
-        model.declareV = @"";
-        model.totalAh = @"";
-        model.leftAh = @"";
-        model.SOC = @"";
-        model.batteriesCount = @"";
+        model.batteryStatus = @"0";//
+        model.declareV = @"0";
+        model.totalAh = @"0";
+        model.leftAh = @"0";
+        model.SOC = @"0";
+        model.batteriesCount = @"0";
         model.isOpen = true;
         model.haveBattery = false;
         

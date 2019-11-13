@@ -74,6 +74,20 @@
     NSString *action = [Tools hexToDecimalWithString:[str substringWithRange:NSMakeRange(str.length - 4, 2)]];
     NSString *actionStr = action.intValue == 0 ? @"还电池" : @"取电池";
     [self showLogWithStr:[NSString stringWithFormat:@"收到开电池仓门指令，流水号data：%@，状态为：%@，电池仓ID为：%@", serialNumD, actionStr, boxId]];
+    
+    //回复
+    unsigned char send[8] = {0xaa, 0x2A, 0x00, 0x00, 37, 0x00, 0x00};
+    NSData *sendData = [NSData dataWithBytes:send length:8];
+    
+    NSMutableData *bodyData = [NSMutableData new];
+
+    [bodyData appendData:serialNumD];
+    unsigned char boxID[1] = {boxId.intValue};
+    [bodyData appendData:[NSData dataWithBytes:boxID length:1]];
+    NSMutableData *finalData = [NSMutableData dataWithData:sendData];
+    [finalData appendData:bodyData];
+    
+    [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
 }
 
 #pragma mark - Action
@@ -730,6 +744,10 @@
         }
     }
     
+}
+- (IBAction)clearLogButttonClick:(id)sender {
+    self.logStr = [[NSMutableString alloc] initWithString:@""];
+    self.logLabel.text = self.logStr;
 }
 
 - (NSMutableArray *)boxArray {

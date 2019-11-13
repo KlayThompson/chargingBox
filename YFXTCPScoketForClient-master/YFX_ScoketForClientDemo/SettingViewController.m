@@ -21,6 +21,7 @@
     self.boxVTF.text = self.currentModel.boxV;
     self.boxTypeTF.text = self.currentModel.boxType;
     self.boxNumberTF.text = self.currentModel.boxNumber;
+    self.boxStatusTF.text = self.currentModel.boxStatus;
     self.inputVTF.text = self.currentModel.inputV;
     self.inputATF.text = self.currentModel.inputA;
     self.boxPowerTF.text = self.currentModel.boxChargePower;

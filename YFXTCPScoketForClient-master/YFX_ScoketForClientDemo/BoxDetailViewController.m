@@ -31,7 +31,7 @@
     self.leftAh.text = self.currentModel.leftAh;
     self.soc.text = self.currentModel.SOC;
     self.count.text = self.currentModel.batteriesCount;
-    
+    self.batteryIdTF.text = self.currentModel.batteryId;
     
 }
 - (IBAction)saveButtonClick:(id)sender {
@@ -52,6 +52,7 @@
     newModel.leftAh = self.leftAh.text;
     newModel.SOC = self.soc.text;
     newModel.batteriesCount = self.count.text;
+    newModel.batteryId = self.batteryIdTF.text;
     self.saveBlock(newModel);
 }
 

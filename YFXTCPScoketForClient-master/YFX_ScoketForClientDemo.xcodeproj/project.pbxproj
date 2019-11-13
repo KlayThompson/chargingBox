@@ -569,7 +569,7 @@
 				DEVELOPMENT_TEAM = 3BB36MF7NL;
 				INFOPLIST_FILE = YFX_ScoketForClientDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = klaythom.sp.cs;
+				PRODUCT_BUNDLE_IDENTIFIER = com.klaythompson.testdemo;
 				PRODUCT_NAME = TestDemo;
 			};
 			name = Debug;
@@ -581,7 +581,7 @@
 				DEVELOPMENT_TEAM = 3BB36MF7NL;
 				INFOPLIST_FILE = YFX_ScoketForClientDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = klaythom.sp.cs;
+				PRODUCT_BUNDLE_IDENTIFIER = com.klaythompson.testdemo;
 				PRODUCT_NAME = TestDemo;
 			};
 			name = Release;

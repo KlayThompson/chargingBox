@@ -14,7 +14,7 @@
 {
     self = [super init];
     if (self) {
-        _boxId = @"AY0123456";
+        _boxId = @"AY01A00YX18110009";
         _boxV = @"100101";
         _boxType = @"0x01";
         _boxNumber = @"8";

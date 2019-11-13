@@ -31,6 +31,7 @@ typedef void(^HeartbeatBlock)(BatteryModel *model);
 @property (weak, nonatomic) IBOutlet UITextField *leftAh;
 @property (weak, nonatomic) IBOutlet UITextField *soc;
 @property (weak, nonatomic) IBOutlet UITextField *count;
+@property (weak, nonatomic) IBOutlet UITextField *batteryIdTF;
 
 @end
 
