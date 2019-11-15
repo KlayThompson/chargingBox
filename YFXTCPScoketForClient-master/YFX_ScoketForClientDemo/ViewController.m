@@ -26,6 +26,7 @@
 @property (nonatomic, strong) NSArray *titleArr;
 @property (nonatomic, copy) NSMutableArray *boxArray;
 @property (nonatomic, strong) NSData *serialNumData;
+@property (nonatomic, strong) NSTimer *timer;
 
 @end
 
@@ -108,6 +109,8 @@
 }
 - (IBAction)close:(id)sender {
     [self.clientSocket disconnect];
+    // 关闭定时器
+    [self.timer  setFireDate:[NSDate distantFuture]];
 }
 - (IBAction)initSocket:(id)sender {
     [self initStatus];
@@ -204,6 +207,8 @@
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
     [self.clientSocket writeData:finalData withTimeout:-1 tag:0];
+    
+    [self.timer setFireDate:[NSDate distantPast]];
 }
 
 
@@ -669,6 +674,12 @@
     
 }
 
+- (void)updateBoxStatus {
+    [self sendBatteryHeartbeatWithBox:1];
+    [self sendBatteryHeartbeatWithBox:2];
+    [self sendBatteryHeartbeatWithBox:3];
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -755,5 +766,12 @@
         _boxArray = [NSMutableArray new];
     }
     return _boxArray;
+}
+
+- (NSTimer *)timer {
+    if (!_timer) {
+        _timer = [NSTimer scheduledTimerWithTimeInterval:60.0 target:self selector:@selector(updateBoxStatus) userInfo:nil repeats:YES];
+    }
+    return _timer;
 }
 @end
