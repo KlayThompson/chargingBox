@@ -252,9 +252,9 @@
     } else if ([boxID isEqualToString:@"box4"]) {
         model.boxId = @"4";
         model.parentNumber = @"AY01A00YX18110009";
-        model.batteryId = @"20191004";
-        model.boxStatus = @"0x03";//充电中
-        model.batteryStatus = @"0x0C";
+        model.batteryId = @"2019001";
+        model.boxStatus = @"0x04";//充电中
+        model.batteryStatus = @"0x0D";
         model.declareV = @"60";
         model.totalAh = @"8";
         model.leftAh = @"6";

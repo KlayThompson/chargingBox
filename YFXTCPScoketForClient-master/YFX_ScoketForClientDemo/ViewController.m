@@ -678,6 +678,7 @@
     [self sendBatteryHeartbeatWithBox:1];
     [self sendBatteryHeartbeatWithBox:2];
     [self sendBatteryHeartbeatWithBox:3];
+//    [self sendBatteryHeartbeatWithBox:4];
 }
 
 #pragma mark - Navigation

@@ -325,7 +325,7 @@
 				TargetAttributes = {
 					6A820BB71E2369A400DCC7EB = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 3BB36MF7NL;
+						DevelopmentTeam = 3UE7CVNU4C;
 						ProvisioningStyle = Automatic;
 					};
 					6A820BD01E2369A400DCC7EB = {
@@ -568,10 +568,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3BB36MF7NL;
+				DEVELOPMENT_TEAM = 3UE7CVNU4C;
 				INFOPLIST_FILE = YFX_ScoketForClientDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.klaythompson.testdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chargedot.anyue3;
 				PRODUCT_NAME = TestDemo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -583,10 +583,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3BB36MF7NL;
+				DEVELOPMENT_TEAM = 3UE7CVNU4C;
 				INFOPLIST_FILE = YFX_ScoketForClientDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.klaythompson.testdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chargedot.anyue3;
 				PRODUCT_NAME = TestDemo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
