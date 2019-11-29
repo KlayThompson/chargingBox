@@ -211,7 +211,7 @@
         model.boxId = @"1";
         model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191001";
-        model.boxStatus = @"03";//充电中
+        model.boxStatus = @"0x02";//充电中
         model.batteryStatus = @"0C";
         model.declareV = @"60";
         model.totalAh = @"8";
@@ -225,7 +225,7 @@
         model.boxId = @"2";
         model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"20191002";
-        model.boxStatus = @"0x04"; //充满待用
+        model.boxStatus = @"0x03"; //充满待用
         model.batteryStatus = @"0x0D";
         model.declareV = @"60";
         model.totalAh = @"8";
@@ -253,7 +253,7 @@
         model.boxId = @"4";
         model.parentNumber = @"AY01A00YX18110009";
         model.batteryId = @"2019001";
-        model.boxStatus = @"0x04";//充电中
+        model.boxStatus = @"0x02";//充电中
         model.batteryStatus = @"0x0D";
         model.declareV = @"60";
         model.totalAh = @"8";

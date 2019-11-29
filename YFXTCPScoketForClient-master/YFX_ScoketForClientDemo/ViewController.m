@@ -151,10 +151,10 @@
     NSData *latData =[Tools convertHexStrToData:latByteStr length:4];
     [bodyData appendData:[NSData dataWithBytes:[latData bytes] length:4]];
     
-    unsigned char provider[1] = {0x09};
+    unsigned char provider[1] = {150};
     [bodyData appendData:[NSData dataWithBytes:provider length:1]];
     
-    NSString *magicNum = @"1234";
+    NSString *magicNum = @"1818929613";
     NSString *magicByteStr = [Tools reverseWithString:[Tools getHexByDecimal:magicNum.intValue]];
     NSData *magicData = [Tools convertHexStrToData:magicByteStr length:4];
     [bodyData appendData:[NSData dataWithBytes:[magicData bytes] length:4]];
@@ -243,55 +243,56 @@
     BatteryModel *model = [self.boxArray objectAtIndex:box - 1];
     
 //    int len = 67 + model.batteriesCount.intValue*2;
-    int len = 47 + 20*2;
+    int len = 45 + 20*2;
     
     unsigned char send[8] = {0x68, 0x13, 0x00, 0x00, len, 0x00, 0x00};
     NSData *sendData = [NSData dataWithBytes:send length:8];
     
     NSMutableData *bodyData = [NSMutableData new];
-    
+    //电池仓编号
     unsigned char boxId[1] = {box};
     [bodyData appendData:[NSData dataWithBytes:boxId length:1]];
     
-//    [bodyData appendData:[Tools hexToBytes:[Tools hexStringFromString:model.parentNumber] length:20]];
+    //电池仓状态
     [bodyData appendData:[Tools convertHexStrToData:model.boxStatus length:1]];
-
+    //电池编号
     NSString *batteryNum = [Tools hexStringFromString:model.batteryId];
     [bodyData appendData:[Tools hexToBytes:batteryNum length:26]];
     
-    
+    //电池状态
     [bodyData appendData:[Tools convertHexStrToData:model.batteryStatus length:0]];
-    
+    //预约状态
     [bodyData appendData:[Tools convertHexStrToData:@"00" length:1]];
     
-    
+    //电池电压
     double declareV = model.declareV.doubleValue * 100;
     NSString *declareVStr = [Tools reverseWithString:[Tools getHexByDecimal:(int)declareV]];
     [bodyData appendData:[Tools convertHexStrToData:declareVStr length:2]];
-    
-    
-    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:3800]] length:2]];
-    
-    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:4000]] length:2]];
-    
-    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:3900]] length:2]];
-    
-    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:3500]] length:2]];
-
-    double cap = model.totalAh.doubleValue * 100;
-    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)cap]] length:2]];
-
+    //电芯数量、SOC
+    unsigned char some[2] = {model.batteriesCount.intValue, model.SOC.intValue};
+    [bodyData appendData:[NSData dataWithBytes:some length:2]];
+    //剩余容量
     double leftCap = model.leftAh.doubleValue * 100;
     [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)leftCap]] length:2]];
-
-    unsigned char some[3] = {model.SOC.intValue, 20, model.batteriesCount.intValue};
-    [bodyData appendData:[NSData dataWithBytes:some length:3]];
+    
+    //SOH
+    unsigned char soh[1] = {20};
+    [bodyData appendData:[NSData dataWithBytes:soh length:1]];
+    //充电电流
+    double cap = model.totalAh.doubleValue * 100;
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:(int)cap]] length:2]];
+    
+    //环境温度
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:3800]] length:2]];
+    //电池芯温度
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:4000]] length:2]];
+    //电池板卡温度
+    [bodyData appendData:[Tools convertHexStrToData:[Tools reverseWithString:[Tools getHexByDecimal:3900]] length:2]];
 
     for (int i = 0; i < 20; i++) {
         unsigned char v[2] = {11};
         [bodyData appendData:[NSData dataWithBytes:v length:2]];
     }
-    
     
     NSMutableData *finalData = [NSMutableData dataWithData:sendData];
     [finalData appendData:bodyData];
@@ -367,7 +368,7 @@
     
 
     for (BatteryModel *model in self.boxArray) {
-        if ([model.boxStatus isEqualToString:@"0x03"] || [model.boxStatus isEqualToString:@"03"]) {
+        if ([model.boxStatus isEqualToString:@"0x02"] || [model.boxStatus isEqualToString:@"02"]) {
             unsigned char send[8] = {0x68, 0x17, 0x00, 0x00, 78, 0x00, 0x00};
             NSData *sendData = [NSData dataWithBytes:send length:8];
             
