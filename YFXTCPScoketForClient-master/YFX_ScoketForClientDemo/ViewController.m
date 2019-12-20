@@ -97,7 +97,7 @@
     //1.创建客户端scoket
     self.clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     //2.链接服务器socket 192.168.0.113为服务端IP
-    BOOL result = [self.clientSocket connectToHost:@"172.16.1.2" onPort:8009 error:nil];
+    BOOL result = [self.clientSocket connectToHost:@"172.16.0.2" onPort:8009 error:nil];
     //判断链接
     if (result) {
         //成功
